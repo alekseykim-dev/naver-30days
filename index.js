@@ -2,9 +2,7 @@ const express = require("express");
 const mariadb = require("mariadb");
 require('dotenv').config();
 const axios = require('axios');
-
 const CryptoJS = require('crypto-js');
-
 
 const app = express();
 
@@ -30,8 +28,7 @@ pool
     console.error("Error connecting to the database:", error);
   });
 
-
-  const baseURL = 'https://api.searchad.naver.com';
+const baseURL = 'https://api.searchad.naver.com';
 const path = '/keywordstool';
 const apiKey = process.env.API_KEY;
 const secretKey = process.env.SECRET_KEY;
@@ -52,16 +49,44 @@ const key = "apple";
 const url = baseURL + path + `?hintKeywords=${key}`;
 
 axios.get(url, { headers })
-  .then(response => {
-    console.log(response.data);
+  .then(async (response) => {
+    const keywordList = response.data.keywordList;
+    console.log("Keyword List:", keywordList);
+    console.log("Keyword List Type:", typeof keywordList);
+
+    try {
+      const conn = await pool.getConnection();
+
+      const insertQuery = "INSERT INTO 30days (timeUnit, relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt, insertedDate) VALUES (?, ?, ?, ?, ?, CURDATE())";
+
+      for (const keyword of keywordList) {
+        const { relKeyword, monthlyPcQcCnt, monthlyMobileQcCnt } = keyword;
+        const period = new Date().toISOString().slice(0, 10); // Use current date as period
+        
+        try {
+          await conn.query(insertQuery, ["date", relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt]);
+          console.log("Data inserted into the database");
+        } catch (error) {
+          // Handle duplicate entry error
+          if (error.code === "ER_DUP_ENTRY") {
+            console.log(`Duplicate entry for keyword '${relKeyword}' and period '${period}'. Skipping insertion.`);
+          } else {
+            console.error("Error inserting data into the database:", error);
+          }
+        }
+      }
+
+      conn.release();
+    } catch (error) {
+      console.error("Error connecting to the database:", error);
+    }
   })
-  .catch(error => {
-    console.error(error);
+  .catch((error) => {
+    console.error("Error requesting data from API:", error);
   });
-  
+
 // Set up Express server
-app.listen(3003, async () => {
+app.listen(3003, () => {
   console.log("Server is running on PORT 3003");
 });
-
 
