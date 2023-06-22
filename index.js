@@ -1,7 +1,10 @@
 const express = require("express");
 const mariadb = require("mariadb");
 require('dotenv').config();
-const RestApi = require('./restapi');
+const axios = require('axios');
+
+const CryptoJS = require('crypto-js');
+
 
 const app = express();
 
@@ -27,33 +30,38 @@ pool
     console.error("Error connecting to the database:", error);
   });
 
+
+  const baseURL = 'https://api.searchad.naver.com';
+const path = '/keywordstool';
+const apiKey = process.env.API_KEY;
+const secretKey = process.env.SECRET_KEY;
+const customerId = process.env.CUSTOMER_ID;
+
+const timestamp = Date.now().toString();
+const method = 'GET';
+const sign = `${timestamp}.${method}.${path}`;
+const signature = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(sign, secretKey));
+
+const headers = {
+  'X-API-KEY': apiKey,
+  'X-Customer': customerId,
+  'X-Timestamp': timestamp,
+  'X-Signature': signature
+};
+const key = "apple";
+const url = baseURL + path + `?hintKeywords=${key}`;
+
+axios.get(url, { headers })
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+  
 // Set up Express server
 app.listen(3003, async () => {
   console.log("Server is running on PORT 3003");
-
-  const api = new RestApi(
-    this.baseUrl,
-    this.apiKey ,
-    this.secretKey ,
-    this.customerId
-  );
-
-  console.log('Test Keywordstool');
-//   const keyword = "korea"; // Specify your desired keyword here
-
-  try {
-    const response = await api.GET('/keywordstool?hintKeywords=apple');
-    console.log('Response:', response);
-
-    if (response && response.keywordList && response.keywordList.length > 0) {
-      const keywords = response.keywordList.map(keywordData => keywordData.relKeyword);
-      console.log('Keywords:', keywords);
-    } else {
-      console.log('No keyword list found in the response.');
-    }
-  } catch (error) {
-    console.error('Error occurred:', error);
-  }
-
-  console.log('\nTest End');
 });
+
+
