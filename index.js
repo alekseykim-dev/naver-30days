@@ -10,11 +10,11 @@ const app = express();
 
 // Create a connection pool to the MariaDB database
 const pool = mariadb.createPool({
-  host: "localhost",
-  user: "admin",
-  password: "tpkris56w",
-  database: "naver30",
-  port: "3306",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: process.env.DB_PORT,
 });
 
 // Test the database connection
