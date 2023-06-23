@@ -45,7 +45,7 @@ const headers = {
   'X-Timestamp': timestamp,
   'X-Signature': signature
 };
-const key = "apple";
+const key = "서울";
 const url = baseURL + path + `?hintKeywords=${key}`;
 
 axios.get(url, { headers })
@@ -57,14 +57,16 @@ axios.get(url, { headers })
     try {
       const conn = await pool.getConnection();
 
-      const insertQuery = "INSERT INTO 30days (timeUnit, relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt, insertedDate) VALUES (?, ?, ?, ?, ?, CURDATE())";
+      const insertQuery = "INSERT INTO 30days (timeUnit, relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt, monthlyTotalQcCnt, insertedDate) VALUES (?, ?, ?, ?, ?, ?, CURDATE())";
+
 
       for (const keyword of keywordList) {
         const { relKeyword, monthlyPcQcCnt, monthlyMobileQcCnt } = keyword;
         const period = new Date().toISOString().slice(0, 10); // Use current date as period
-        
+        const monthlyTotalQcCnt = monthlyPcQcCnt + monthlyMobileQcCnt; // Calculate the sum
+      
         try {
-          await conn.query(insertQuery, ["date", relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt]);
+          await conn.query(insertQuery, ["date", relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt, monthlyTotalQcCnt]);
           console.log("Data inserted into the database");
         } catch (error) {
           // Handle duplicate entry error
@@ -75,7 +77,7 @@ axios.get(url, { headers })
           }
         }
       }
-
+ 
       conn.release();
     } catch (error) {
       console.error("Error connecting to the database:", error);
@@ -84,7 +86,7 @@ axios.get(url, { headers })
   .catch((error) => {
     console.error("Error requesting data from API:", error);
   });
-
+ 
 // Set up Express server
 app.listen(3003, () => {
   console.log("Server is running on PORT 3003");

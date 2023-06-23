@@ -16,4 +16,8 @@ CREATE TABLE 30days (
   monthlyMobileQcCnt VARCHAR(10) NOT NULL,
   insertedDate DATE NOT NULL,
   UNIQUE KEY unique_keyword_period (relKeyword, period)
+  
 );
+
+
+--ALTER TABLE 30days ADD COLUMN monthlyTotalQcCnt INT;
