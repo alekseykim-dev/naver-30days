@@ -8,7 +8,7 @@
 -- );
 
 
-CREATE TABLE 30days (
+CREATE TABLE IF NOT EXISTS 30days (
   timeUnit VARCHAR(10) NOT NULL,
   relKeyword VARCHAR(255) NOT NULL,
   period DATE NOT NULL,
@@ -19,5 +19,32 @@ CREATE TABLE 30days (
   
 );
 
+
+
+
+CREATE TABLE IF NOT EXISTS ratio_data (
+  period DATE NOT NULL,
+  ratio DECIMAL(18, 6),
+  realNum DECIMAL(10, 2),
+  insertedDate DATE
+);
+
+
+-- CREATE TABLE IF NOT EXISTS ratio_data (
+--   ratio DECIMAL(10, 2),
+--   realNum DECIMAL(10, 2),
+--   insertedDate DATE,
+--   period DATE
+-- );
+
+
+
+-- CREATE TABLE IF NOT EXISTS ratio_data (
+--   period DATE NOT NULL,
+--   ratio DECIMAL(10, 2),
+--   realNum DECIMAL(10, 2),
+--   insertedDate DATE,
+--   PRIMARY KEY (period)
+-- );
 
 --ALTER TABLE 30days ADD COLUMN monthlyTotalQcCnt INT;
