@@ -39,7 +39,7 @@ const method = 'GET';
 const sign = `${timestamp}.${method}.${path}`;
 const signature = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(sign, secretKey));
 
-const headers = {
+const headers = {          
   'X-API-KEY': apiKey,
   'X-Customer': customerId,
   'X-Timestamp': timestamp,
@@ -55,7 +55,7 @@ axios.get(url, { headers })
     console.log("Keyword List Type:", typeof keywordList);
 
     try {
-      const conn = await pool.getConnection();
+      const conn = await pool.getConnection();      
 
       const insertQuery = "INSERT INTO 30days (timeUnit, relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt, monthlyTotalQcCnt, insertedDate) VALUES (?, ?, ?, ?, ?, ?, CURDATE())";
 
@@ -64,6 +64,7 @@ axios.get(url, { headers })
         const { relKeyword, monthlyPcQcCnt, monthlyMobileQcCnt } = keyword;
         const period = new Date().toISOString().slice(0, 10); // Use current date as period
         const monthlyTotalQcCnt = monthlyPcQcCnt + monthlyMobileQcCnt; // Calculate the sum
+        console.log("monthlyTotalQcCnt: ", monthlyTotalQcCnt)
       
         try {
           await conn.query(insertQuery, ["date", relKeyword, period, monthlyPcQcCnt, monthlyMobileQcCnt, monthlyTotalQcCnt]);

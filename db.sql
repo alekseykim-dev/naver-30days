@@ -21,11 +21,30 @@ CREATE TABLE IF NOT EXISTS 30days (
 
 
 
+
 CREATE TABLE IF NOT EXISTS ratio_data (
-  ratio DECIMAL(10, 2),
+  period DATE NOT NULL,
+  ratio DECIMAL(18, 6),
   realNum DECIMAL(10, 2),
-  insertedDate DATE,
-  PRIMARY KEY (insertedDate)
+  insertedDate DATE
 );
+
+
+-- CREATE TABLE IF NOT EXISTS ratio_data (
+--   ratio DECIMAL(10, 2),
+--   realNum DECIMAL(10, 2),
+--   insertedDate DATE,
+--   period DATE
+-- );
+
+
+
+-- CREATE TABLE IF NOT EXISTS ratio_data (
+--   period DATE NOT NULL,
+--   ratio DECIMAL(10, 2),
+--   realNum DECIMAL(10, 2),
+--   insertedDate DATE,
+--   PRIMARY KEY (period)
+-- );
 
 --ALTER TABLE 30days ADD COLUMN monthlyTotalQcCnt INT;
